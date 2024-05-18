@@ -23,13 +23,13 @@ namespace Dinica
             _edges[from].Add(new Edge(to, 0, Capacity, _edges[to].Count));
             _edges[to].Add(new Edge(from, 0, 0, _edges[from].Count));
         }
-        private bool BFS(int startPoint, int endPoint)
+        private bool BFS(int s, int t)
         {
             for (int j = 0; j < _countVertex; j++)
                 _level[j] = -1;
-            _level[startPoint] = 0;
+            _level[s] = 0;
             Queue<int> queue = new Queue<int>();
-            queue.Enqueue(startPoint);
+            queue.Enqueue(s);
             while (queue.Count != 0)
             {
                 int from = queue.Dequeue();
@@ -43,11 +43,11 @@ namespace Dinica
                     }
                 }
             }
-            return _level[endPoint] < 0 ? false : true;
+            return _level[t] < 0 ? false : true;
         }
-        private long DFS(int from, long Flow, int endPoint, int[] ptr)
+        private long DFS(int from, long Flow, int t, int[] ptr)
         {
-            if (from == endPoint)
+            if (from == t)
                 return Flow;
             while (ptr[from] < _edges[from].Count)
             {
@@ -55,7 +55,7 @@ namespace Dinica
                 if (_level[edge._to] == _level[from] + 1 && edge._flow < edge._capacity)
                 {
                     long current_flow = Math.Min(Flow, edge._capacity - edge._flow);
-                    long temp_flow = DFS(edge._to, current_flow, endPoint, ptr);
+                    long temp_flow = DFS(edge._to, current_flow, t, ptr);
                     if (temp_flow > 0)
                     {
                         edge._flow += temp_flow;
@@ -67,17 +67,15 @@ namespace Dinica
             }
             return 0;
         }
-        public long Dinica(int startPoint, int endPoint)
+        public long Dinica(int s, int t)
         {
-            if (startPoint == endPoint)
-                return -1;
             long maxFlow = 0;
-            while (BFS(startPoint, endPoint))
+            while (BFS(s, t))
             {
                 int[] ptr = new int[_countVertex + 1];
                 while (true)
                 {
-                    long Flow = DFS(startPoint, long.MaxValue, endPoint, ptr);
+                    long Flow = DFS(s, long.MaxValue, t, ptr);
                     if (Flow == 0)
                         break;
                     maxFlow += Flow;
