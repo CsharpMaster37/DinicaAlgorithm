@@ -51,7 +51,7 @@ namespace Dinica
                 return Flow;
             while (ptr[from] < _edges[from].Count)
             {
-                Edge edge = _edges[from][ptr[from]++];
+                Edge edge = _edges[from][ptr[from]];
                 if (_level[edge._to] == _level[from] + 1 && edge._flow < edge._capacity)
                 {
                     long current_flow = Math.Min(Flow, edge._capacity - edge._flow);
@@ -63,6 +63,7 @@ namespace Dinica
                         return temp_flow;
                     }
                 }
+                ptr[from]++;
             }
             return 0;
         }
